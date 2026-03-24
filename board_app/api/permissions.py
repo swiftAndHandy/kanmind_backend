@@ -8,3 +8,7 @@ class IsBoardOwner(permissions.BasePermission):
 class IsBoardMemberOrOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user in obj.members.all() or obj.owner == request.user
+
+class TaskAuthorIsBoardMemberOrOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user in obj.board.members.all() or obj.board.owner == request.user

@@ -7,13 +7,15 @@ from auth_app.models import UserProfile
 class TaskSerializer(serializers.ModelSerializer):
     assignee = UserProfileSerializer(read_only=True)
     reviewer = UserProfileSerializer(read_only=True)
-    assignee_id = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(), write_only=True)
-    reviewer_id = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(), write_only=True)
+    assignee_id = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),
+                                                     write_only=True, required=False, allow_null=True)
+    reviewer_id = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),
+                                                     write_only=True, required=False, allow_null=True)
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
-        fields = ('id', 'board_id', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
+        fields = ('id', 'board', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
                   'reviewer', 'due_date', 'comments_count')
 
     def create(self, validated_data):
