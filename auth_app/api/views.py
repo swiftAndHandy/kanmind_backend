@@ -1,10 +1,16 @@
 from django.contrib.auth import authenticate
-from rest_framework import status
-from rest_framework.permissions import AllowAny
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework import status, generics
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from auth_app.api.serializers import RegistrationSerializer
+from auth_app.api.serializers import RegistrationSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ValidationError, NotFound
+
+
+from auth_app.models import UserProfile
 
 
 class RegistrationView(APIView):
@@ -40,3 +46,22 @@ class LoginView(APIView):
             "email": user.email,
             "user_id": user.id
         }, status=status.HTTP_200_OK)
+
+class UserProfileView(generics.ListAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        email = self.request.query_params.get('email')
+
+        try:
+            validate_email(email)
+        except DjangoValidationError:
+            raise ValidationError({'email': 'Email is missing or invalid format.'})
+
+        user = UserProfile.objects.filter(email__iexact=email)
+
+        if user:
+            return user
+
+        raise NotFound({'email': 'Email not found.'})

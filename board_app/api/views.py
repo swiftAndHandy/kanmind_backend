@@ -1,7 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from board_app.api.permissions import IsBoardOwner, IsBoardMemberOrOwner
 from board_app.api.serializers import BoardSerializer, BoardDetailSerializer, BoardUpdateSerializer
 from board_app.models import Board
@@ -51,3 +50,4 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
