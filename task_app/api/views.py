@@ -1,9 +1,8 @@
-from rest_framework import generics
+from rest_framework import generics, request
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.permissions import IsAuthenticated
-
-from board_app.api.permissions import TaskAuthorIsBoardMemberOrOwner
 from task_app.api.serializers import TaskSerializer
+from task_app.models import Task
 
 
 class CreateTaskView(generics.CreateAPIView):
@@ -20,3 +19,18 @@ class CreateTaskView(generics.CreateAPIView):
             raise PermissionDenied()
 
         serializer.save()
+
+
+class AssignedTasksView(generics.ListAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(assignee=self.request.user)
+
+class ReviewingTasksView(generics.ListAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(reviewer=self.request.user)
