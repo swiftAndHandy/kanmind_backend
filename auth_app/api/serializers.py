@@ -17,11 +17,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        # pop password before create() to prevent storing plaintext in DB
         password = validated_data.pop('password')
         user = UserProfile.objects.create(**validated_data)
+        # hash and save password
         user.set_password(password)
         user.save()
-
         return user
 
 class UserProfileSerializer(serializers.ModelSerializer):
