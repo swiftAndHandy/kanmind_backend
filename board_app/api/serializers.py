@@ -24,13 +24,13 @@ class BoardSerializer(serializers.ModelSerializer):
         ]
 
     def get_ticket_count(self, obj):
-        return 0
+        return obj.tasks.count()
 
     def get_tasks_to_do_count(self, obj):
-        return 0
+        return obj.tasks.filter(status='to-do').count()
 
     def get_tasks_high_prio_count(self, obj):
-        return 0
+        return obj.tasks.filter(priority='high').count()
 
     def get_member_count(self, obj):
         return obj.members.count()
