@@ -29,3 +29,26 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def get_comments_count(self, obj):
         return obj.comments.count()
+
+class TaskUpdateSerializer(serializers.ModelSerializer):
+    assignee = UserProfileSerializer(read_only=True)
+    reviewer = UserProfileSerializer(read_only=True)
+    assignee_id = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),
+                                                     write_only=True, required=False, allow_null=True)
+    reviewer_id = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),
+                                                     write_only=True, required=False, allow_null=True)
+
+    class Meta:
+        model = Task
+        fields = ('id', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
+                  'reviewer', 'due_date')
+
+    def update(self, instance, validated_data):
+        if 'assignee_id' in validated_data:
+            instance.assignee = validated_data.pop('assignee_id')
+
+        if 'reviewer_id' in validated_data:
+            instance.reviewer = validated_data.pop('reviewer_id')
+
+        instance = super().update(instance, validated_data)
+        return instance

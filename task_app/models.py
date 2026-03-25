@@ -21,6 +21,7 @@ class Task(models.Model):
     reviewer = models.ForeignKey('auth_app.UserProfile',
                                  related_name='reviewing_tasks',
                                  on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey('auth_app.UserProfile', on_delete=models.CASCADE)
     due_date = models.DateField()
 
 class Comments(models.Model):
