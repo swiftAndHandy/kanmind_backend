@@ -55,25 +55,25 @@ class LoginView(APIView):
             "user_id": user.id
         }, status=status.HTTP_200_OK)
 
-class UserProfileView(generics.ListAPIView):
+class UserProfileView(APIView):
     """
     To prevent data-leaks, only Authenticated users can check E-Mail/User connectivity.
     Required to add Users as Board Members by entering an e-mail address.
     """
-    serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        email = self.request.query_params.get('email')
+    def get(self, request, *args, **kwargs):
+        email = request.query_params.get('email')
 
         try:
             validate_email(email)
         except DjangoValidationError:
             raise ValidationError({'email': 'Email is missing or invalid format.'})
 
-        user = UserProfile.objects.filter(email__iexact=email)
+        user = UserProfile.objects.filter(email__iexact=email).first()
 
-        if user:
-            return user
+        if not user:
+            raise NotFound({'email': 'Email not found.'})
 
-        raise NotFound({'email': 'Email not found.'})
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
