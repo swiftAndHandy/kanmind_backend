@@ -9,6 +9,11 @@ from task_app.models import Task, Comment
 
 
 class CreateTaskView(generics.CreateAPIView):
+    """
+    Creates a new task within a board.
+    Board membership is checked manually in perform_create instead of a permission class,
+    because has_object_permission is only called on existing objects.
+    """
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
@@ -25,6 +30,9 @@ class CreateTaskView(generics.CreateAPIView):
 
 
 class AssignedTasksView(generics.ListAPIView):
+    """
+    Required to display assigned tasks to the authenticated user.
+    """
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
@@ -32,6 +40,9 @@ class AssignedTasksView(generics.ListAPIView):
         return Task.objects.filter(assignee=self.request.user)
 
 class ReviewingTasksView(generics.ListAPIView):
+    """
+    Required to display reviewed tasks to the authenticated user.
+    """
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
@@ -39,6 +50,10 @@ class ReviewingTasksView(generics.ListAPIView):
         return Task.objects.filter(reviewer=self.request.user)
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a task instance.
+    GET and PATCH have different responses -> Serializers.
+    """
     permission_classes = [IsAuthenticated]
 
     queryset = Task.objects.all()
@@ -57,6 +72,12 @@ class CreateOrDeleteCommentView(mixins.CreateModelMixin,
                                 mixins.ListModelMixin,
                                 mixins.DestroyModelMixin,
                                 generics.GenericAPIView):
+    """
+    Creates a new comment within a board.
+    Only the comment author is authorized to delete the comment:
+    Even the board owner doesn't have the permission to delete the comment.
+    """
+
     serializer_class = CommentSerializer
 
     def get_permissions(self):

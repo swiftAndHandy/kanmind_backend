@@ -14,6 +14,10 @@ from auth_app.models import UserProfile
 
 
 class RegistrationView(APIView):
+    """
+    Public POST only view.
+    Creates new user with given credentials.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -24,14 +28,18 @@ class RegistrationView(APIView):
 
         user = serializer.save()
         token, _ = Token.objects.get_or_create(user=user)
+        # dict is required, to make serializer.data mutable to extend the Response.
         data = dict(serializer.data)
         data['token'] = token.key
         data['user_id'] = user.id
 
-
         return Response(data, status=status.HTTP_201_CREATED)
 
 class LoginView(APIView):
+    """
+    Public POST only view.
+    Checks email and password to authenticate user.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -48,6 +56,10 @@ class LoginView(APIView):
         }, status=status.HTTP_200_OK)
 
 class UserProfileView(generics.ListAPIView):
+    """
+    To prevent data-leaks, only Authenticated users can check E-Mail/User connectivity.
+    Required to add Users as Board Members by entering an e-mail address.
+    """
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 

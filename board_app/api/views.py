@@ -7,6 +7,11 @@ from board_app.models import Board
 
 
 class BoardListCreateView(generics.ListCreateAPIView):
+    """
+    Lists boards where the authenticated user is owner or member.
+    Permissions filtering is handled implicitly via get_queryset
+    instead of a permissions class, since no single board object exists at this level.
+    """
     serializer_class = BoardSerializer
     permission_classes = [IsAuthenticated]
 
@@ -18,7 +23,13 @@ class BoardListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
 class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    PATCH needs to have another response (Serializer) than GET/DELETE.
+    Only Board Members and Board Owner are allowed to GET/PATCH Board.
+    Only Board Owner is allowed to DELETE the Board.
+    """
     queryset = Board.objects.all()
 
     def get_serializer_class(self):
