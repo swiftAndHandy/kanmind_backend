@@ -13,7 +13,7 @@ class IsBoardMember(permissions.BasePermission):
         return request.user in obj.board.members.all()
 
     def has_permission(self, request, view):
-        task_id = view.kwargs.get('task_id')
+        task_id = view.kwargs.get('task_id') or view.kwargs.get('pk')
         try:
             task = Task.objects.get(pk=task_id)
             return request.user in task.board.members.all() or task.board.owner == request.user
