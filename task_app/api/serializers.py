@@ -1,9 +1,8 @@
-from rest_framework.fields import SerializerMethodField
+from rest_framework import serializers
 
 from auth_app.api.serializers import UserProfileSerializer
-from task_app.models import Task, Comment
-from rest_framework import serializers
 from auth_app.models import UserProfile
+from task_app.models import Task, Comment
 
 
 class TaskSerializer(serializers.ModelSerializer):

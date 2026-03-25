@@ -1,15 +1,15 @@
 from django.contrib.auth import authenticate
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
+
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from auth_app.api.serializers import RegistrationSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError, NotFound
 
-
+from auth_app.api.serializers import RegistrationSerializer, UserProfileSerializer
 from auth_app.models import UserProfile
 
 

@@ -3,6 +3,7 @@ from rest_framework.exceptions import NotFound
 
 from task_app.models import Task
 
+
 class IsTaskCreatorOrBoardOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.created_by == request.user or obj.board.owner == request.user
