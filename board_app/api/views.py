@@ -35,8 +35,3 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         board = self.get_object()
         serializer = self.get_serializer(board)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def delete(self, request, *args, **kwargs):
-        board = self.get_object()
-        board.delete()
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
