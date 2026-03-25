@@ -1,10 +1,13 @@
 from django.urls import path
 
-from task_app.api.views import CreateTaskView, ReviewingTasksView, AssignedTasksView, TaskDetailView
+from task_app.api.views import CreateTaskView, ReviewingTasksView, AssignedTasksView, TaskDetailView, \
+    CreateOrDeleteCommentView
 
 urlpatterns = [
     path('tasks/', CreateTaskView.as_view()),
     path('tasks/assigned-to-me/', AssignedTasksView.as_view()),
     path('tasks/reviewing/', ReviewingTasksView.as_view()),
     path('tasks/<int:pk>/', TaskDetailView.as_view()),
+    path('tasks/<int:task_id>/comments/', CreateOrDeleteCommentView.as_view()),
+    path('tasks/<int:task_id>/comments/<int:pk>/', CreateOrDeleteCommentView.as_view()),
 ]

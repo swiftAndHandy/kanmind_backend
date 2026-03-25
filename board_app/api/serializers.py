@@ -3,6 +3,7 @@ from rest_framework import serializers
 from auth_app.api.serializers import UserProfileSerializer
 from auth_app.models import UserProfile
 from board_app.models import Board
+from task_app.api.serializers import TaskSerializer
 
 
 class BoardSerializer(serializers.ModelSerializer):
@@ -43,12 +44,12 @@ class BoardSerializer(serializers.ModelSerializer):
 
 class BoardDetailSerializer(serializers.ModelSerializer):
     members = UserProfileSerializer(many=True, read_only=True)
-    # tasks = serializers.PrimaryKeyRelatedField(many=True, queryset=Task.objects.all())
+    tasks = TaskSerializer(many=True, read_only=True)
 
     class Meta:
         model = Board
         fields = [
-            'id', 'title', 'owner_id', 'members' # , 'tasks',
+            'id', 'title', 'owner_id', 'members', 'tasks'
         ]
 
 class BoardUpdateSerializer(serializers.ModelSerializer):

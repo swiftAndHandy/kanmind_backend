@@ -1,10 +1,11 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.permissions import IsAuthenticated
 
+from board_app.api.permissions import IsCommentAuthor
 from task_app.api.permissions import IsTaskCreatorOrBoardOwner, IsBoardMember
-from task_app.api.serializers import TaskSerializer, TaskUpdateSerializer
-from task_app.models import Task
+from task_app.api.serializers import TaskSerializer, TaskUpdateSerializer, CommentSerializer
+from task_app.models import Task, Comment
 
 
 class CreateTaskView(generics.CreateAPIView):
@@ -51,3 +52,30 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'DELETE':
             return [IsAuthenticated(), IsTaskCreatorOrBoardOwner()]
         return [IsAuthenticated(), IsBoardMember()]
+
+class CreateOrDeleteCommentView(mixins.CreateModelMixin,
+                                mixins.ListModelMixin,
+                                mixins.DestroyModelMixin,
+                                generics.GenericAPIView):
+    serializer_class = CommentSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'DELETE':
+            return [IsAuthenticated(), IsCommentAuthor()]
+        return [IsAuthenticated(), IsBoardMember()]
+
+    def get_queryset(self):
+        return Comment.objects.filter(task=self.kwargs['task_id'])
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        task = Task.objects.get(pk=self.kwargs['task_id'])
+        serializer.save(task=task, author=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)

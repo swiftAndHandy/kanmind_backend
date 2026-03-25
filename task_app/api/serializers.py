@@ -1,5 +1,7 @@
+from rest_framework.fields import SerializerMethodField
+
 from auth_app.api.serializers import UserProfileSerializer
-from task_app.models import Task
+from task_app.models import Task, Comment
 from rest_framework import serializers
 from auth_app.models import UserProfile
 
@@ -15,8 +17,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'board', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
-                  'reviewer', 'due_date', 'comments_count')
+        fields = ['id', 'board', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
+                  'reviewer', 'due_date', 'comments_count']
 
     def create(self, validated_data):
         assignee = validated_data.pop('assignee_id', None)
@@ -40,8 +42,8 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
-                  'reviewer', 'due_date')
+        fields = ['id', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
+                  'reviewer', 'due_date']
 
     def update(self, instance, validated_data):
         if 'assignee_id' in validated_data:
@@ -52,3 +54,9 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
 
         instance = super().update(instance, validated_data)
         return instance
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source='author.fullname', read_only=True)
+    class Meta:
+        model = Comment
+        fields = ('id', 'created_at', 'author', 'content')
