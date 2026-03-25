@@ -21,3 +21,6 @@ class UserProfile(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
     REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.email

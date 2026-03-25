@@ -24,7 +24,7 @@ class Task(models.Model):
     created_by = models.ForeignKey('auth_app.UserProfile', on_delete=models.CASCADE)
     due_date = models.DateField()
 
-class Comments(models.Model):
+class Comment(models.Model):
     task = models.ForeignKey('task_app.Task', on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey('auth_app.UserProfile', on_delete=models.SET_NULL, null=True)
     content = models.TextField()
