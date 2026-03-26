@@ -28,6 +28,11 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'board', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
                   'reviewer', 'due_date', 'comments_count']
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['board'] = instance.board.id
+        return representation
+
     def validate_board(self, value):
         try:
             return Board.objects.get(pk=value)
