@@ -1,7 +1,9 @@
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 
 from auth_app.api.serializers import UserProfileSerializer
 from auth_app.models import UserProfile
+from board_app.models import Board
 from task_app.models import Task, Comment
 
 
@@ -19,11 +21,18 @@ class TaskSerializer(serializers.ModelSerializer):
     reviewer_id = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),
                                                      write_only=True, required=False, allow_null=True)
     comments_count = serializers.SerializerMethodField()
+    board = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Task
         fields = ['id', 'board', 'title', 'description', 'status', 'priority', 'assignee_id', 'assignee', 'reviewer_id',
                   'reviewer', 'due_date', 'comments_count']
+
+    def validate_board(self, value):
+        try:
+            return Board.objects.get(pk=value)
+        except Board.DoesNotExist:
+            raise NotFound(detail='Board does not exist')
 
     def create(self, validated_data):
         # must popped and set separately because they don't directly map to the model field names

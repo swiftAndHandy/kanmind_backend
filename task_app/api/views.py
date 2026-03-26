@@ -20,9 +20,6 @@ class CreateTaskView(generics.CreateAPIView):
     def perform_create(self, serializer):
         board = serializer.validated_data.get('board')
 
-        if not board:
-            raise NotFound("Board not found")
-
         if not (board.owner == self.request.user or self.request.user in board.members.all()):
             raise PermissionDenied()
 
