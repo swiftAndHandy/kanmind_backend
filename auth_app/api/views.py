@@ -43,7 +43,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        user = authenticate(username=request.data.get('email'), password=request.data.get('password'))
+        user = authenticate(username=request.data.get('email', '').lower(), password=request.data.get('password'))
 
         if user is None:
             return Response({'message': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
